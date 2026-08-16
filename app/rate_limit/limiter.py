@@ -1,3 +1,8 @@
+"""
+Rate Limiter module.
+
+Contains the core logic for the Fixed Window rate limiting algorithm.
+"""
 import asyncio
 from datetime import datetime, timezone
 import logging
@@ -7,6 +12,9 @@ from app.rate_limit.storage import RateLimitStorage
 logger = logging.getLogger(__name__)
 
 class RateLimiter:
+    """
+    Core Rate Limiter class implementing a Fixed Window algorithm.
+    """
     def __init__(self, storage: RateLimitStorage, max_requests: int, window_seconds: int):
         self.storage = storage
         self.max_requests = max_requests
@@ -24,6 +32,18 @@ class RateLimiter:
         return datetime.now(timezone.utc)
 
     async def allow(self, user_id: str) -> RateLimitResult:
+        """
+        Check if a request from the given user is allowed.
+        
+        Evaluates the user's current state against the configured limits
+        and updates the state in the storage backend.
+        
+        Args:
+            user_id: The unique identifier of the user.
+            
+        Returns:
+            RateLimitResult: Information about the allowed status and limits.
+        """
         lock = await self._get_lock(user_id)
         
         async with lock:
