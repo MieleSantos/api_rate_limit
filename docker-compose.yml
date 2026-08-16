@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rate-limit-api
+    ports:
+      - "8000:8000"
+    environment:
+      - RATE_LIMIT_REQUESTS=100
+      - RATE_LIMIT_WINDOW_SECONDS=60
+    restart: unless-stopped
